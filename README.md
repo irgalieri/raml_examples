@@ -27,4 +27,4 @@ $> git checkout < example_number >
 License
 -------
 
-The driver is released under the GPL-3.0 license. See the LICENSE for more information.
+The driver is released under the GPL-3.0 license. See the [LICENSE](https://github.com/irgalieri/raml_examples/blob/master/LICENSE) for more information.
