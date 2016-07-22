@@ -1,10 +1,10 @@
-RAML Example 2: Named Parameters
-================================
+RAML Example 3: Schemas
+=======================
 
 Explanation
 -----------
 
-This RAML Specification describes collections of named parameters for the following properties: URI parameters, query string parameters, form parameters, request bodies (depending on the media type), and request and response headers. And in this example you can see form parameters. This example content one parameter with multiple type.
+In this example we can see the entity resource, this resource return two kind of data type, JSON and XML. Each response has its own schema. In this case response-xml and response-json.
 
 ###### global.raml
 
@@ -13,28 +13,69 @@ This RAML Specification describes collections of named parameters for the follow
 title: Dummy API
 version: 1
 baseUri: https://api.intraway.com
-/:
-  post:
-    description: The POST operation adds an new entity.
-    body:
-      application/x-www-form-urlencoded:
-        formParameters:
-          EntityId:
-            displayName: Entity Identifier
-            description: Entity numeric identifier.
-            type: number
-          Name:
-            description: Entity name.
-            type: string
-          Desc:
-            - type: string
-              description: Text content. The text content must be the last field in the form.
-            - type: file
-              description: File to upload. The file must be the last field in the form.
+schemas:
+  - response-json:      !include entity.xsd
+    response-xml:       !include entity.json
+/entity:
+  get:
+    responses:
+      200:
+        body:
+          application/xml:
+            schema: response-json
+          application/json:
+            schema: response-xml
 
 ```
 
-To learn more about [RAML - Named Parameters](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#named-parameters).
+###### entity.json
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://jsonschema.net",
+  "type": "object",
+  "properties": {
+    "status": {
+      "id": "http://jsonschema.net/status",
+      "type": "integer"
+    },
+    "message": {
+      "id": "http://jsonschema.net/message",
+      "type": "string"
+    },
+    "detail": {
+      "id": "http://jsonschema.net/detail",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "message",
+    "detail"
+  ]
+}
+```
+
+###### entity.xsd
+
+```xml
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="response">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute type="xs:short" name="status"/>
+          <xs:attribute type="xs:string" name="message"/>
+          <xs:attribute type="xs:string" name="detail"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
+```
+
+If want learn more about this, go to [RAML - Schemas](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#schemas)
 
 License
 -------
