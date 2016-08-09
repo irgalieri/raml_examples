@@ -1,25 +1,43 @@
 #%RAML 0.8
 title: Dummy API
-version: v1
+version: v3
 baseUri: https://api.intraway.com
-resourceTypes:
-  - searchableCollection:
-      get:
-        queryParameters:
-          <<queryParamName>>:
-            description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
-          <<fallbackParamName>>:
-            description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
-traits:
-  - secured:
-      queryParameters:
-        <<tokenName>>:
-          description: A valid <<tokenName>> is required
-    paged:
-      queryParameters:
-        numPages:
-          description: The number of pages to return, not to exceed <<maxPages>>
-/books:
-  type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
-  get:
-    is: [ secured: { tokenName: access_token}, paged: { maxPages: 10 } ]
+securitySchemes:
+    - oauth_2_0:
+        description: |
+          Dummy API supports OAuth 2.0 for authenticating all API requests.
+        type: OAuth 2.0
+        describedBy:
+            headers:
+                Authorization:
+                    description: |
+                       Used to send a valid OAuth 2 access token.
+                    type: string
+            responses:
+                401:
+                    description: |
+                        Bad or expired token. This can happen if the user
+                        revoked or expired an access token. To fix, you should re-
+                        authenticate the user.
+                403:
+                    description: |
+                        Bad OAuth request (wrong consumer key, bad nonce, expired
+                        timestamp...). Unfortunately, re-authenticating the user won't help here.
+        settings:
+          authorizationUri: https://www.intraway.com/sso/oauth2/authorize
+          accessTokenUri: https://api.intraway.com/sso/oauth2/token
+          authorizationGrants: [ code, token ]
+          scopes: [ ADMINISTRATOR ]
+    - oauth_1_0:
+        description: |
+            OAuth 1.0 continues to be supported for all API requests, but OAuth 2.0 is now preferred.
+        type: OAuth 1.0
+        settings:
+          requestTokenUri: https://api.intraway.com/sso/oauth/request_token
+          authorizationUri: https://www.intraway.com/sso/oauth/authorize
+          tokenCredentialsUri: https://api.intraway.com/sso/oauth/access_token
+/users/{userid}/packages:
+    get:
+        securedBy: [null, oauth_1_0, oauth_2_0]
+        description: |
+            List the authenticated user’s packages.

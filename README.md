@@ -1,46 +1,62 @@
-RAML Example 5: Resource Types and Traits
-=========================================
+RAML Example 6: Security
+========================
 
 Explanation
 -----------
 
-**Resource Type**: is a partial resource definition that, like a resource, can specify a description and methods and their properties. Resources that use a resource type inherit its properties, such as its methods.
+**SecuritySchemes** property is declared at the API's root level.
 
-**Trait**: is a partial method definition that, like a method, can provide method-level properties such as description, headers, query string parameters, and responses. Methods that use one or more traits inherit those traits' properties.
-
-The next example shows one *resourceType* and two *traits*. All have parameters like *queryParamName* or *tokenName*, you could use this to replace a word or a parameter name.
+The next example shows two security schema, OAuth 1.0 and OAuth 2.0. And in the resource **'/users/{userid}/packages'** implement 3 security. anonymous, OAuth 1.0 and OAuth 2.0.
 
 ###### global.raml
 
 ```yaml
 #%RAML 0.8
 title: Dummy API
-version: v1
+version: v3
 baseUri: https://api.intraway.com
-resourceTypes:
-  - searchableCollection:
-      get:
-        queryParameters:
-          <<queryParamName>>:
-            description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
-          <<fallbackParamName>>:
-            description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
-traits:
-  - secured:
-      queryParameters:
-        <<tokenName>>:
-          description: A valid <<tokenName>> is required
-    paged:
-      queryParameters:
-        numPages:
-          description: The number of pages to return, not to exceed <<maxPages>>
-/books:
-  type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
-  get:
-    is: [ secured: { tokenName: access_token}, paged: { maxPages: 10 } ]
+securitySchemes:
+    - oauth_2_0:
+        description: |
+          Dummy API supports OAuth 2.0 for authenticating all API requests.
+        type: OAuth 2.0
+        describedBy:
+            headers:
+                Authorization:
+                    description: |
+                       Used to send a valid OAuth 2 access token.
+                    type: string
+            responses:
+                401:
+                    description: |
+                        Bad or expired token. This can happen if the user
+                        revoked or expired an access token. To fix, you should re-
+                        authenticate the user.
+                403:
+                    description: |
+                        Bad OAuth request (wrong consumer key, bad nonce, expired
+                        timestamp...). Unfortunately, re-authenticating the user won't help here.
+        settings:
+          authorizationUri: https://www.intraway.com/sso/oauth2/authorize
+          accessTokenUri: https://api.intraway.com/sso/oauth2/token
+          authorizationGrants: [ code, token ]
+          scopes: [ ADMINISTRATOR ]
+    - oauth_1_0:
+        description: |
+            OAuth 1.0 continues to be supported for all API requests, but OAuth 2.0 is now preferred.
+        type: OAuth 1.0
+        settings:
+          requestTokenUri: https://api.intraway.com/sso/oauth/request_token
+          authorizationUri: https://www.intraway.com/sso/oauth/authorize
+          tokenCredentialsUri: https://api.intraway.com/sso/oauth/access_token
+/users/{userid}/packages:
+    get:
+        securedBy: [null, oauth_1_0, oauth_2_0]
+        description: |
+            List the authenticated user’s packages.
 ```
 
-If want learn more about this, go to [RAML - Resource Types and Traits](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#resource-types-and-traits)
+If want learn more about this, go to [RAML - Security](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#security)
 
 License
 -------
