@@ -1,11 +1,25 @@
 #%RAML 0.8
 title: Dummy API
-version: 1
+version: v1
 baseUri: https://api.intraway.com
-documentation:
-  - title: Custom 1
-    content: |
-      _Lorem ipsum_ dolor sit amet, consectetur adipiscing elit. Mauris non neque dolor. In laoreet mauris non orci auctor, non gravida urna fringilla. Vestibulum ac nibh et risus suscipit aliquam eget ullamcorper magna. Morbi placerat consectetur nunc, a commodo lorem commodo sit amet. Sed bibendum ullamcorper orci nec efficitur. Integer non lacinia neque. Aliquam placerat, turpis a vulputate maximus, erat sem ullamcorper nisl, vel tempor lorem lacus ac orci. Suspendisse potenti. Fusce sit amet massa quam. Sed ac placerat massa, vel finibus lacus. Nam nec dolor ac enim varius cursus.
-
-  - title: Custom 2
-    content: !include custom2.md
+resourceTypes:
+  - searchableCollection:
+      get:
+        queryParameters:
+          <<queryParamName>>:
+            description: Return <<resourcePathName>> that have their <<queryParamName>> matching the given value
+          <<fallbackParamName>>:
+            description: If no values match the value given for <<queryParamName>>, use <<fallbackParamName>> instead
+traits:
+  - secured:
+      queryParameters:
+        <<tokenName>>:
+          description: A valid <<tokenName>> is required
+    paged:
+      queryParameters:
+        numPages:
+          description: The number of pages to return, not to exceed <<maxPages>>
+/books:
+  type: { searchableCollection: { queryParamName: title, fallbackParamName: digest_all_fields } }
+  get:
+    is: [ secured: { tokenName: access_token}, paged: { maxPages: 10 } ]
