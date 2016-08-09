@@ -1,10 +1,10 @@
-RAML Example 3: Schemas
+RAML Example 3: Documentation
 =======================
 
 Explanation
 -----------
 
-In this example we can see the entity resource, this resource return two kind of data type, JSON and XML. Each response has its own schema. In this case response-xml and response-json.
+This example shows an API definition with two user document. One was included by inline method and the other was included using external link. The text to include must be compatible with markdown.
 
 ###### global.raml
 
@@ -13,69 +13,21 @@ In this example we can see the entity resource, this resource return two kind of
 title: Dummy API
 version: 1
 baseUri: https://api.intraway.com
-schemas:
-  - response-json:      !include entity.xsd
-    response-xml:       !include entity.json
-/entity:
-  get:
-    responses:
-      200:
-        body:
-          application/xml:
-            schema: response-json
-          application/json:
-            schema: response-xml
-
+documentation:
+  - title: Custom 1
+    content: |
+      _Lorem ipsum_ dolor sit amet, consectetur adipiscing elit. Mauris non neque dolor. In laoreet mauris non orci auctor, non gravida urna fringilla. Vestibulum ac nibh et risus suscipit aliquam eget ullamcorper magna. Morbi placerat consectetur nunc, a commodo lorem commodo sit amet. Sed bibendum ullamcorper orci nec efficitur. Integer non lacinia neque. Aliquam placerat, turpis a vulputate maximus, erat sem ullamcorper nisl, vel tempor lorem lacus ac orci. Suspendisse potenti. Fusce sit amet massa quam. Sed ac placerat massa, vel finibus lacus. Nam nec dolor ac enim varius cursus.
+  - title: Custom 2
+    content: !include custom2.md
 ```
 
-###### entity.json
+###### custom2.md
 
-```json
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://jsonschema.net",
-  "type": "object",
-  "properties": {
-    "status": {
-      "id": "http://jsonschema.net/status",
-      "type": "integer"
-    },
-    "message": {
-      "id": "http://jsonschema.net/message",
-      "type": "string"
-    },
-    "detail": {
-      "id": "http://jsonschema.net/detail",
-      "type": "string"
-    }
-  },
-  "required": [
-    "status",
-    "message",
-    "detail"
-  ]
-}
+```md
+_Lorem ipsum_ dolor sit amet, **consectetur** adipiscing elit. Mauris non neque dolor. In laoreet mauris non orci auctor, non gravida urna fringilla. Vestibulum ac nibh et risus suscipit aliquam eget ullamcorper magna. Morbi placerat *consectetur nunc*, a commodo lorem commodo sit amet. Sed bibendum ullamcorper orci nec efficitur. Integer non lacinia neque. Aliquam placerat, turpis a vulputate maximus, erat sem ullamcorper nisl, vel tempor lorem lacus ac orci. Suspendisse potenti. Fusce sit amet massa quam. Sed ac placerat massa, vel finibus lacus. Nam nec dolor ac enim varius cursus.
 ```
 
-###### entity.xsd
-
-```xml
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="response">
-    <xs:complexType>
-      <xs:simpleContent>
-        <xs:extension base="xs:string">
-          <xs:attribute type="xs:short" name="status"/>
-          <xs:attribute type="xs:string" name="message"/>
-          <xs:attribute type="xs:string" name="detail"/>
-        </xs:extension>
-      </xs:simpleContent>
-    </xs:complexType>
-  </xs:element>
-</xs:schema>
-```
-
-If want learn more about this, go to [RAML - Schemas](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#schemas)
+If want learn more about this, go to [RAML - User Documentation](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#user-documentation)
 
 License
 -------
