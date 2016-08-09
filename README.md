@@ -1,4 +1,4 @@
-RAML Example 3: Documentation
+RAML Example 4: Documentation
 =======================
 
 Explanation
