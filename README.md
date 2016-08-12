@@ -30,7 +30,7 @@ traits:
       queryParameters:
         <<tokenName>>:
           description: A valid <<tokenName>> is required
-    paged:
+  - paged:
       queryParameters:
         numPages:
           description: The number of pages to return, not to exceed <<maxPages>>
